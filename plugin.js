@@ -8,7 +8,7 @@ function modifyBabelConfig(babelOptions, inputFile) {
       (pkgJsonPath = inputFile.findControlFile('package.json'))) {
     if (!Object.hasOwnProperty(solidCache, pkgJsonPath)) {
       solidCache[pkgJsonPath] = JSON.parse(
-        inputFile.readAndWatchFile(pkgJsonPath)).solid || null;
+        inputFile.readAndWatchFile(pkgJsonPath)).solid || {};
     }
     solidSettings = solidCache[pkgJsonPath];
   }
