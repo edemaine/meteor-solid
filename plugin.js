@@ -1,55 +1,17 @@
-// Meteor puts a big preset bundle in position 0
-function meteorPreset(x) {
-  return (x && x.presets && x.presets[0]) || {};
-}
-
-// Extract React options from Babel by diffing react: true vs. false
-// (because maybeAddReactPlugins isn't exported by
-// https://github.com/meteor/meteor/blob/devel/npm-packages/meteor-babel/options.js)
-let reactOptionsCache;
-function reactOptions() {
-  if (!reactOptionsCache) {
-    // Start with all React options
-    reactOptionsCache = meteorPreset(Babel.getDefaultOptions({react: true}));
-    // Drop non-Array options, as we don't know how to diff those.
-    Object.entries(reactOptionsCache).forEach(([key, value]) => {
-      if (!Array.isArray(value))
-        delete reactOptionsCache[key];
-    });
-    // Remove non-React options via diff
-    Object.entries(meteorPreset(Babel.getDefaultOptions({react: false})))
-    .forEach(([key, baseValue]) => {
-      if (Array.isArray(baseValue)) {
-        const baseParts = {};
-        baseValue.forEach(basePart => baseParts[JSON.stringify(basePart)] = true);
-        reactOptionsCache[key] = reactOptionsCache[key]
-        .filter(reactPart =>
-          !baseParts.hasOwnProperty(JSON.stringify(reactPart)));
-        if (!reactOptionsCache[key].length)
-          delete reactOptionsCache[key];
-      }
-    });
-  }
-  console.log(JSON.stringify(reactOptionsCache));
-  return reactOptionsCache;
-}
-
-const solidSettingsCache = {};
+const solidOptionsCache = {};
 function modifyBabelConfig(babelOptions, inputFile) {
-  console.log('---');
-  console.log(inputFile.getPathInPackage(), 'before', babelOptions.presets, babelOptions.plugins);
-  console.log('---');
+  const client = babelOptions.caller.arch.startsWith('web');
 
   // Based on _inferFromPackageJson in
   // https://github.com/meteor/meteor/blob/devel/packages/babel-compiler/babel-compiler.js
-  let pkgJsonPath, solidSettings = {};
+  let pkgJsonPath, solidOptions = {};
   if (inputFile.findControlFile &&
       (pkgJsonPath = inputFile.findControlFile('package.json'))) {
-    if (!Object.hasOwnProperty(solidSettingsCache, pkgJsonPath)) {
-      solidSettingsCache[pkgJsonPath] = JSON.parse(
+    if (!Object.hasOwnProperty(solidOptionsCache, pkgJsonPath)) {
+      solidOptionsCache[pkgJsonPath] = JSON.parse(
         inputFile.readAndWatchFile(pkgJsonPath)).solid || {};
     }
-    solidSettings = solidSettingsCache[pkgJsonPath];
+    solidOptions = solidOptionsCache[pkgJsonPath];
   }
 
   // Default behavior is to turn on Solid mode always.
@@ -59,35 +21,43 @@ function modifyBabelConfig(babelOptions, inputFile) {
   // * 'ignore' specifies one or more micromatch patterns for filenames that
   //   should not have Solid compilation, overriding 'match' if both specified.
   let useSolid = true;
-  if (solidSettings.match)
+  if (solidOptions.match)
     useSolid = Npm.require('micromatch').isMatch(
-      inputFile.getPathInPackage(), solidSettings.match);
-  if (solidSettings.ignore)
+      inputFile.getPathInPackage(), solidOptions.match);
+  if (solidOptions.ignore)
     useSolid = useSolid && !Npm.require('micromatch').isMatch(
-      inputFile.getPathInPackage(), solidSettings.ignore);
+      inputFile.getPathInPackage(), solidOptions.ignore);
 
   // Modify babelOptions in-place.
+  let solidPreset = null;
   if (useSolid) {
     if (!babelOptions.presets)
       babelOptions.presets = [];
-    if (solidSettings.ssr) {
-      const hydratable = solidSettings.hydratable !== false;
-      if (babelOptions.caller.arch.startsWith('web')) // client
-        babelOptions.presets.push(["solid", {generate: "dom", hydratable}]);
+    if (solidOptions.ssr) {
+      const hydratable = solidOptions.hydratable !== false;
+      if (client)
+        babelOptions.presets.push(solidPreset =
+          ["solid", {generate: "dom", hydratable}]);
       else // server
-        babelOptions.presets.push(["solid", {generate: "ssr", hydratable}]);
+        babelOptions.presets.push(solidPreset =
+          ["solid", {generate: "ssr", hydratable}]);
     } else {
-      if (babelOptions.caller.arch.startsWith('web')) // client
-        babelOptions.presets.push(["solid"]);
+      if (client)
+        babelOptions.presets.push(solidPreset = ["solid"]);
     }
   } else {
     // Fall back to React mode, Meteor's default.
-    const preset = meteorPreset(babelOptions);
-    Object.entries(reactOptions()).forEach((key, value) => {
-      if (!preset[key])
-        preset[key] = [];
-      preset[key].push(...value);
-    });
+    // Modify Meteor's options which are in a bundle as the first preset.
+    const options = babelOptions.presets[0];
+    // Copied from maybeAddReactPlugins from
+    // https://github.com/meteor/meteor/blob/devel/npm-packages/meteor-babel/options.js
+    // but without require()s, as Npm.require() would force us to add depends.
+    options.presets.push("@babel/preset-react");
+    options.plugins.push(
+      ["@babel/plugin-proposal-class-properties", {
+        loose: true
+      }]
+    );
     // HMR enabling based on
     // https://github.com/meteor/meteor/blob/devel/packages/ecmascript/plugin.js
     if (inputFile.hmrAvailable() && Package.ReactFastRefresh) {
@@ -95,9 +65,15 @@ function modifyBabelConfig(babelOptions, inputFile) {
       babelOptions.plugins.push(...Package.ReactFastRefresh.getBabelPluginConfig());
     }
   }
-  console.log('---');
-  console.log(inputFile.getPathInPackage(), useSolid, babelOptions.presets, babelOptions.plugins);
-  console.log('---');
+
+  if (solidOptions.verbose) {
+    console.log(inputFile.getPathInPackage() +
+      (inputFile.getPackageName() ?
+        ` in package ${inputFile.getPackageName()}` : ''),
+      `on ${client ? 'client' : 'server'}`,
+      `using ${useSolid ? 'Solid' : 'React'}` +
+      (useSolid ? ` with Babel preset ${JSON.stringify(solidPreset)}` : ''));
+  }
 }
 
 Plugin.registerCompiler({

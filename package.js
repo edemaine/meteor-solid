@@ -7,7 +7,7 @@ Package.describe({
 
 Package.registerBuildPlugin({
   name: 'compile-solid',
-  use: ['babel-compiler'], //'react-fast-refresh'],
+  use: ['babel-compiler'],
   sources: ['plugin.js'],
   npmDependencies: {
     micromatch: '4.0.4',
@@ -20,7 +20,7 @@ Package.onUse(function(api) {
   api.use('react-fast-refresh', {weak: true});
 
   // The following api.imply calls should match those in
-  // ../coffeescript/package.js.
+  // https://github.com/meteor/meteor/blob/devel/packages/ecmascript/package.js
   api.imply('modules');
   api.imply('ecmascript-runtime');
   api.imply('babel-runtime');
@@ -28,17 +28,4 @@ Package.onUse(function(api) {
 
   // Runtime support for Meteor 1.5 dynamic import(...) syntax.
   api.imply('dynamic-import');
-});
-
-Package.onTest(function(api) {
-  api.use(['tinytest', 'underscore']);
-  api.use(['es5-shim', 'ecmascript', 'babel-compiler']);
-  api.addFiles('runtime-tests.js');
-  api.addFiles('transpilation-tests.js', 'server');
-
-  api.addFiles('bare-test.js');
-  api.addFiles('bare-test-file.js', ['client', 'server'], {
-    bare: true,
-  });
-  api.addFiles('runtime-tests-client.js', ['client', 'web.browser.legacy']);
 });
