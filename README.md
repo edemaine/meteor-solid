@@ -83,6 +83,9 @@ If you specify both `match` and `ignore`, then `ignore` overrides `match`:
 the set of compiled files consists of those matching `match` minus
 those matching `ignore`.
 
+Any files not passed through the SolidJS compiler are processed in
+the standard Meteor way, which is to enable React.
+
 ### `verbose` (default: false)
 
 It can be hard to tell whether your configuration is applying the compiler
