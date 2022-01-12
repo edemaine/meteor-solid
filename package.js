@@ -9,12 +9,15 @@ Package.registerBuildPlugin({
   name: 'compile-solid',
   use: ['babel-compiler'], //'react-fast-refresh'],
   sources: ['plugin.js'],
+  npmDependencies: {
+    micromatch: '4.0.4',
+  },
 });
 
 Package.onUse(function(api) {
   api.use('isobuild:compiler-plugin@1.0.0');
   api.use('babel-compiler');
-  //api.use('react-fast-refresh');
+  api.use('react-fast-refresh', {weak: true});
 
   // The following api.imply calls should match those in
   // ../coffeescript/package.js.
