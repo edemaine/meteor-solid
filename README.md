@@ -25,8 +25,9 @@ all the same ECMAScript features from
 [the `ecmascript` package](https://github.com/meteor/meteor/tree/devel/packages/ecmascript),
 and all the same TypeScript features from
 [the `typescript` package](https://github.com/meteor/meteor/tree/devel/packages/typescript).
-Upgrades to TypeScript happen in the `babel-compiler` package, so should not
-require changes to this package (just like the `typescript` package).
+Upgrades to TypeScript happen in the `babel-compiler` package, so this package
+will need to be upgraded occasionally to depend on the latest `babel-compiler`
+(via `api.versionsFrom`).
 
 ## Options
 

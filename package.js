@@ -3,6 +3,7 @@ Package.describe({
   version: '0.0.0',
   summary: 'Compiler plugin for SolidJS including SSR',
   documentation: 'README.md',
+  git: 'https://github.com/edemaine/meteor-solid.git',
 });
 
 Package.registerBuildPlugin({
@@ -15,6 +16,7 @@ Package.registerBuildPlugin({
 });
 
 Package.onUse(function(api) {
+  api.versionsFrom('2.5.3');
   api.use('isobuild:compiler-plugin@1.0.0');
   api.use('babel-compiler');
   api.use('react-fast-refresh', {weak: true});
