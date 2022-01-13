@@ -87,6 +87,8 @@ those matching `ignore`.
 
 Any files not passed through the SolidJS compiler are processed in
 the standard Meteor way, which is to enable React.
+If you want to use `react-fast-refresh`, you need to manually add it via
+`meteor add react-fast-refresh` (whereas `ecmascript` adds it for you).
 
 ### `verbose` (default: false)
 
