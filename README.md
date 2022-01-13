@@ -4,11 +4,14 @@ This package enables full use of the [SolidJS](https://www.solidjs.com/)
 [compiler](https://www.npmjs.com/package/babel-preset-solid),
 including these key features:
 
-* SSR support (via `ssr: true`)
+* Server-Side Rendering support (via `ssr: true`)
 * Server-only rendering (via `hydratable: false`)
 * Applying to just a subset of files, for mixed React + SolidJS projects
   (via `match` and `ignore` options).
 * JavaScript (JSX), TypeScript (TSX), and CoffeeScript (CSX) input files
+
+A [demo repository](https://github.com/edemaine/solid-meteor-demo)
+illustrates the use of this package in a Meteor project.
 
 ## Usage
 
@@ -65,7 +68,7 @@ Here is a complete example with all the possible options:
 The default setup just supports client-side `render`.
 Server code doesn't use the SolidJS compiler at all.
 
-If you want to use server-side rendering, set this to `true`.
+If you want to use Server-Side Rendering (SSR), set this to `true`.
 The same file will be compiled differently on client and server
 to enable server-side rendering + client-side hydration.
 
@@ -114,3 +117,25 @@ react/main.tsx on client using React
 client/main.tsx on client using Solid with Babel preset ["solid",{"generate":"dom","hydratable":true}]
 client/main.tsx on server using Solid with Babel preset ["solid",{"generate":"ssr","hydratable":true}]
 ```
+
+## Alternatives
+
+If you just want to use client-side SolidJS, with no SSR, and you do not need
+to co-exist with React code, you do not need this package.
+Instead, it's enough to add a `babel` property to your `package.json`,
+along the following lines:
+
+```json
+{
+  "babel": {
+    "presets": [
+      "es2015",
+      "solid"
+    ]
+  }
+}
+```
+
+Indeed, this is how
+[early versions of `solid-meteor-demo`](https://github.com/edemaine/solid-meteor-demo/tree/2c7e6a37bbdda4c01cbeddadfdb7174214ebff9f)
+worked.
