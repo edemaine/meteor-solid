@@ -8,27 +8,40 @@ including these key features:
 * Server-only rendering (via `hydratable: false`)
 * Applying to just a subset of files, for mixed React + SolidJS projects
   (via `match` and `ignore` options).
-* JavaScript (JSX) and TypeScript (TSX) input files
+* JavaScript (JSX), TypeScript (TSX), and CoffeeScript (CSX) input files
 
 ## Usage
 
 The `edemaine:solid` package replaces the standard Meteor modules
-`ecmascript` and `typescript`.
+`ecmascript`, `typescript`, and `coffeescript`.
 To install it, run the following commands within your Meteor project:
 
 ```bash
-meteor remove ecmascript typescript
+meteor remove ecmascript typescript coffeescript
 meteor add edemaine:solid
+```
+
+Additionally, to enable CoffeeScript support, you should explicitly add
+`coffeescript-compiler` (which `coffeescript` also depends on):
+
+```bash
+meteor add coffeescript-compiler
 ```
 
 This package should support
 all the same ECMAScript features from
 [the `ecmascript` package](https://github.com/meteor/meteor/tree/devel/packages/ecmascript),
-and all the same TypeScript features from
-[the `typescript` package](https://github.com/meteor/meteor/tree/devel/packages/typescript).
-Upgrades to TypeScript happen in the `babel-compiler` package, so this package
-will need to be upgraded occasionally to depend on the latest `babel-compiler`
-(via `api.versionsFrom`).
+all the same TypeScript features from
+[the `typescript` package](https://github.com/meteor/meteor/tree/devel/packages/typescript),
+and the same CoffeeScript features from
+[the `coffeescript` package](https://github.com/meteor/meteor/tree/devel/packages/non-core/coffeescript).
+
+Upgrades to TypeScript happen in
+[the `babel-compiler` package](https://github.com/meteor/meteor/tree/devel/packages/babel-compiler),
+and upgrades to CoffeeScript happen in
+[the `coffeescript-compiler` package](https://github.com/meteor/meteor/tree/devel/packages/non-core/coffeescript-compiler)
+so you should be able to update these by depending on the latest version
+within your Meteor application.
 
 ## Options
 
