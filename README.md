@@ -8,6 +8,7 @@ including these key features:
 * Server-only rendering (via `hydratable: false`)
 * Applying to just a subset of files, for mixed React + SolidJS projects
   (via `match` and `ignore` options).
+* JavaScript (JSX) and TypeScript (TSX) input files
 
 ## Usage
 
