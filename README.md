@@ -12,6 +12,9 @@ including these key features:
 
 A [demo repository](https://github.com/edemaine/solid-meteor-demo)
 illustrates the use of this package in a Meteor project.
+Related, the
+[`solid-meteor-data` library](https://github.com/edemaine/solid-meteor-data)
+provides tools for combining SolidJS and Meteor reactivity.
 
 ## Usage
 
