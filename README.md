@@ -59,6 +59,7 @@ Here is a complete example with all the possible options:
   "solid": {
     "ssr": true,
     "hydratable": true,
+    "hmr": true,
     "match": ["**/*.tsx", "**/*.jsx"],
     "ignore": "react/**",
     "verbose": true
@@ -81,6 +82,11 @@ If `ssr` is turned it, then the assumption is that you want to hydrate on
 the client too.  If you rather want to render *only* on the server side, you
 can set `hydratable` to `false`.  This will avoid running the compiler on
 client code, and sets the server-code compiler to non-hydratable mode.
+
+### `hmr` (default: true)
+
+The default setup enables Hot Module Reloading (HMR) via
+[solid-refresh](https://github.com/solidjs/solid-refresh).
 
 ### `match` (default: everything)
 
