@@ -34,7 +34,13 @@ Additionally, to enable CoffeeScript support, you should explicitly add
 meteor add coffeescript-compiler
 ```
 
-This package should support
+In addition, you must install the SolidJS compiler via NPM:
+
+```bash
+npm install -D babel-preset-solid
+```
+
+The `edemaine:solid` package should support
 all the same ECMAScript features from
 [the `ecmascript` package](https://github.com/meteor/meteor/tree/devel/packages/ecmascript),
 all the same TypeScript features from
