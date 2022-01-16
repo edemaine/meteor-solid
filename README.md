@@ -1,7 +1,7 @@
 # SolidJS Compiler for Meteor
 
 This package enables full use of the [SolidJS](https://www.solidjs.com/)
-[compiler](https://www.npmjs.com/package/babel-preset-solid),
+[JSX compiler](https://www.npmjs.com/package/babel-preset-solid),
 including these key features:
 
 * Server-Side Rendering support (via `ssr: true`)
@@ -14,7 +14,10 @@ A [demo repository](https://github.com/edemaine/solid-meteor-demo)
 illustrates the use of this package in a Meteor project.
 Related, the
 [`solid-meteor-data` library](https://github.com/edemaine/solid-meteor-data)
-provides tools for combining SolidJS and Meteor reactivity.
+provides tools for combining SolidJS and Meteor reactivity, and
+[`edemaine:solid-meteor-helper`](https://github.com/edemaine/meteor-solid-template-helper/tree/main)
+enables use of SolidJS components within [Blaze](http://blazejs.org/) templates
+(e.g. for gradual transitions from Blaze).
 
 ## Usage
 
