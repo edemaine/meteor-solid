@@ -100,6 +100,13 @@ in `match`.
 Paths are relative to the project root without a leading slash; for example,
 `imports/ui/filename.jsx` or `lib/filename.js`.
 
+Combined with the
+[`meteor`/`nodeModules`/`recompile`](https://guide.meteor.com/using-npm-packages.html#recompile)
+option, you can use this to apply the Solid compiler to JSX distributed in
+NPM packages.  For example, you could include
+`node_modules/solid*/**/*.jsx` as a `match` pattern to compile JSX from all
+NPM packages starting with `solid` (that you also tell Meteor to recompile).
+
 ### `ignore` (default: nothing)
 
 To prevent applying the SolidJS compiler to certain files,

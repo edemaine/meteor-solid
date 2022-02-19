@@ -2,11 +2,26 @@ const solidOptionsCache = {};
 function modifyBabelConfig(babelOptions, inputFile) {
   const client = babelOptions.caller.arch.startsWith('web');
 
-  // Based on _inferFromPackageJson in
+  let solidOptions = {};
+  // Read package.json, based on _inferFromPackageJson in
   // https://github.com/meteor/meteor/blob/devel/packages/babel-compiler/babel-compiler.js
-  let pkgJsonPath, solidOptions = {};
-  if (inputFile.findControlFile &&
-      (pkgJsonPath = inputFile.findControlFile('package.json'))) {
+  // But use root package.json over one in node_modules, to support recompiling
+  // an NPM package using the `solid` settings from the app.
+  let pkgJsonPath = inputFile.findControlFile &&
+    inputFile.findControlFile('package.json');
+  if (pkgJsonPath) {
+    const match = /\/node_modules\/[^/]*\/package.json$/.exec(pkgJsonPath);
+    if (match) {
+      pkgJsonPath = pkgJsonPath.slice(0, pkgJsonPath.length - match[0].length)
+        + '/package.json';
+      // Ensure file exists, similar to InputFile's findControlFile
+      // https://github.com/meteor/meteor/blob/devel/tools/isobuild/compiler-plugin.js
+      const stat = inputFile._stat(pkgJsonPath);
+      if (!(stat && stat.isFile()))
+        pkgJsonPath = null;
+    }
+  }
+  if (pkgJsonPath) {
     if (!Object.hasOwnProperty(solidOptionsCache, pkgJsonPath)) {
       solidOptionsCache[pkgJsonPath] = JSON.parse(
         inputFile.readAndWatchFile(pkgJsonPath)).solid || {};
