@@ -107,7 +107,7 @@ class TypeScriptCompiler extends BabelCompiler {
 }
 
 if (Package['coffeescript-compiler']) {
-  class CoffeeScriptCompiler extends Package['coffeescript-compiler'].CoffeeScriptCompiler {
+  class SolidCoffeeScriptCompiler extends Package['coffeescript-compiler'].CoffeeScriptCompiler {
     constructor() {
       super();
       // Override super's babelCompiler to use our Solid compiler:
@@ -120,6 +120,7 @@ if (Package['coffeescript-compiler']) {
   // The following code is copied from
   // https://github.com/meteor/meteor/blob/devel/packages/non-core/coffeescript/compile-coffeescript.js
   // copyright Meteor Software Ltd., licensed under MIT License
+  // Modified to use SolidCoffeeScriptCompiler over CoffeeScriptCompiler
 
   // The CompileResult for this CachingCompiler is a {source, sourceMap} object.
   class CachedCoffeeScriptCompiler extends CachingCompiler {
@@ -129,7 +130,7 @@ if (Package['coffeescript-compiler']) {
         defaultCacheSize: 1024*1024*10,
       });
 
-      this.coffeeScriptCompiler = new CoffeeScriptCompiler();
+      this.coffeeScriptCompiler = new SolidCoffeeScriptCompiler();
     }
 
     getCacheKey(inputFile) {
