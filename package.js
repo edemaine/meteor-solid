@@ -1,6 +1,6 @@
 Package.describe({
   name: 'edemaine:solid',
-  version: '0.2.0',
+  version: '0.2.1',
   summary: 'Compiler plugin for SolidJS including SSR',
   documentation: 'README.md',
   git: 'https://github.com/edemaine/meteor-solid.git',
@@ -16,6 +16,9 @@ Package.registerBuildPlugin({
   sources: ['plugin.js'],
   npmDependencies: {
     micromatch: '4.0.4',
+    // implied by https://github.com/meteor/meteor/blob/devel/npm-packages/meteor-babel/package.json
+    //"@babel/plugin-proposal-class-properties": "7.16.7",
+    //"@babel/preset-react": "7.16.7",
   },
 });
 

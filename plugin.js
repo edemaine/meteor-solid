@@ -66,10 +66,10 @@ function modifyBabelConfig(babelOptions, inputFile) {
     const options = babelOptions.presets[0];
     // Copied from maybeAddReactPlugins from
     // https://github.com/meteor/meteor/blob/devel/npm-packages/meteor-babel/options.js
-    // but without require()s, as Npm.require() would force us to add depends.
-    options.presets.push("@babel/preset-react");
+    // but replacing `require` with `Npm.require` for use in Meteor package.
+    options.presets.push(Npm.require("@babel/preset-react"));
     options.plugins.push(
-      ["@babel/plugin-proposal-class-properties", {
+      [Npm.require("@babel/plugin-proposal-class-properties"), {
         loose: true
       }]
     );
