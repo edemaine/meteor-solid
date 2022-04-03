@@ -137,6 +137,10 @@ client/main.tsx on client using Solid with Babel preset ["solid",{"generate":"do
 client/main.tsx on server using Solid with Babel preset ["solid",{"generate":"ssr","hydratable":true}]
 ```
 
+Note that the CoffeeScript compiler caches compilation results on disk,
+so you won't see how `.coffee` files got compiled on subsequent startup
+until you modify those files again.
+
 ## Alternatives
 
 If you just want to use client-side SolidJS, with no SSR, and you do not need
