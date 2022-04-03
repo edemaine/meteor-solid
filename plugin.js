@@ -141,7 +141,7 @@ if (Package['coffeescript-compiler']) {
   class CachedCoffeeScriptCompiler extends CachingCompiler {
     constructor() {
       super({
-        compilerName: 'coffeescript',
+        compilerName: 'solid-coffeescript',
         defaultCacheSize: 1024*1024*10,
       });
 

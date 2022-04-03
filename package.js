@@ -1,6 +1,6 @@
 Package.describe({
   name: 'edemaine:solid',
-  version: '0.2.1',
+  version: '0.2.2',
   summary: 'Compiler plugin for SolidJS including SSR',
   documentation: 'README.md',
   git: 'https://github.com/edemaine/meteor-solid.git',
