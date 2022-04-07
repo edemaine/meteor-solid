@@ -139,7 +139,9 @@ client/main.tsx on server using Solid with Babel preset ["solid",{"generate":"ss
 
 Note that the CoffeeScript compiler caches compilation results on disk,
 so you won't see how `.coffee` files got compiled on subsequent startup
-until you modify those files again.
+until you modify those files (or change settings) again.
+Alternatively, you can reset the cache by deleting the directory
+`.meteor/local/plugin-cache/edemaine_solid` and restarting Meteor.
 
 ## Alternatives
 

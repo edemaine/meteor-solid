@@ -1,6 +1,7 @@
 const solidOptionsCache = {};
-function modifyBabelConfig(babelOptions, inputFile) {
-  const client = babelOptions.caller.arch.startsWith('web');
+
+function getSolidConfig(inputFile) {
+  const isClient = inputFile.getArch().startsWith('web');
 
   let solidOptions = {};
   // Read package.json, based on _inferFromPackageJson in
@@ -43,23 +44,33 @@ function modifyBabelConfig(babelOptions, inputFile) {
     useSolid = useSolid && !Npm.require('micromatch').isMatch(
       inputFile.getPathInPackage(), solidOptions.ignore);
 
-  // Modify babelOptions in-place.
+  // Compute Solid preset
   let solidPreset = null;
   if (useSolid) {
-    if (!babelOptions.presets)
-      babelOptions.presets = [];
     if (solidOptions.ssr) {
       const hydratable = solidOptions.hydratable !== false;
-      if (client)
-        babelOptions.presets.push(solidPreset =
-          ["solid", {generate: "dom", hydratable}]);
+      if (isClient)
+        solidPreset = ["solid", {generate: "dom", hydratable}];
       else // server
-        babelOptions.presets.push(solidPreset =
-          ["solid", {generate: "ssr", hydratable}]);
+        solidPreset = ["solid", {generate: "ssr", hydratable}];
     } else {
-      if (client)
-        babelOptions.presets.push(solidPreset = ["solid"]);
+      if (isClient)
+        solidPreset = ["solid"];
     }
+  }
+
+  return {solidOptions, isClient, useSolid, solidPreset};
+}
+
+function modifyBabelConfig(babelOptions, inputFile) {
+  const {solidOptions, isClient, useSolid, solidPreset} =
+    getSolidConfig(inputFile);
+
+  // Modify babelOptions in-place.
+  if (solidPreset) {
+    if (!babelOptions.presets)
+      babelOptions.presets = [];
+    babelOptions.presets.push(solidPreset);
   } else {
     // Fall back to React mode, Meteor's default.
     // Modify Meteor's options which are in a bundle as the first preset.
@@ -85,7 +96,7 @@ function modifyBabelConfig(babelOptions, inputFile) {
     console.log(inputFile.getPathInPackage() +
       (inputFile.getPackageName() ?
         ` in package ${inputFile.getPackageName()}` : ''),
-      `on ${client ? 'client' : 'server'}`,
+      `on ${isClient ? 'client' : 'server'}`,
       `using ${useSolid ? 'Solid' : 'React'}` +
       (useSolid ? ` with Babel preset ${JSON.stringify(solidPreset)}` : ''));
   }
@@ -149,11 +160,14 @@ if (Package['coffeescript-compiler']) {
     }
 
     getCacheKey(inputFile) {
+      const {useSolid, solidPreset} = getSolidConfig(inputFile);
       return [
         inputFile.getArch(),
         inputFile.getSourceHash(),
         inputFile.getDeclaredExports(),
         this.coffeeScriptCompiler.getCompileOptions(inputFile),
+        useSolid,
+        solidPreset,
       ];
     }
 
