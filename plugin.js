@@ -130,73 +130,41 @@ if (Package['coffeescript-compiler']) {
         react: false,
       }, modifyBabelConfig);
     }
-  }
 
-  // The following code is copied from
-  // https://github.com/meteor/meteor/blob/devel/packages/non-core/coffeescript/compile-coffeescript.js
-  // copyright Meteor Software Ltd., licensed under MIT License
-  // Modified to use SolidCoffeeScriptCompiler over CoffeeScriptCompiler
+    // CoffeeScriptCompiler isn't a functional compiler by itself.
+    // (It was designed to be used by CachingCoffeeScriptCompiler.)
+    // So we need to add a `processFilesForTarget` method ourselves.
 
-  // The CompileResult for this CachingCompiler is a {source, sourceMap} object.
-  class CachedCoffeeScriptCompiler extends CachingCompiler {
-    constructor() {
-      super({
-        compilerName: 'solid-coffeescript',
-        defaultCacheSize: 1024*1024*10,
+    // Based loosely on BabelCompiler from
+    // https://github.com/meteor/meteor/blob/devel/packages/babel-compiler/babel-compiler.js
+    processFilesForTarget(inputFiles) {
+      inputFiles.forEach((inputFile) => {
+        if (inputFile.supportsLazyCompilation) {
+          inputFile.addJavaScript({
+            path: inputFile.getPathInPackage(),
+            bare: inputFile.getFileOptions().bare
+          }, () => this.processOneFileForTarget(inputFile));
+        } else {
+          inputFile.addJavaScript(this.processOneFileForTarget(inputFile));
+        }
       });
-
-      this.coffeeScriptCompiler = new SolidCoffeeScriptCompiler();
     }
 
-    getCacheKey(inputFile) {
-      return [
-        inputFile.getArch(),
-        inputFile.getSourceHash(),
-        inputFile.getDeclaredExports(),
-        this.coffeeScriptCompiler.getCompileOptions(inputFile),
-      ];
-    }
-
-    setDiskCacheDirectory(cacheDir) {
-      this.coffeeScriptCompiler.babelCompiler.setDiskCacheDirectory(cacheDir);
-      return super.setDiskCacheDirectory(cacheDir);
-    }
-
-    compileOneFileLater(inputFile, getResult) {
-      inputFile.addJavaScript({
-        path: this.coffeeScriptCompiler.outputFilePath(inputFile),
+    // Based loosely on addCompileResult from
+    // https://github.com/meteor/meteor/blob/devel/packages/non-core/coffeescript/compile-coffeescript.js
+    processOneFileForTarget(inputFile) {
+      const {source, sourceMap} = this.compileOneFile(inputFile);
+      return {
+        path: this.outputFilePath(inputFile),
         sourcePath: inputFile.getPathInPackage(),
+        data: source,
+        sourceMap,
         bare: inputFile.getFileOptions().bare
-      }, async () => {
-        const result = await getResult();
-        return result && {
-          data: result.source,
-          sourceMap: result.sourceMap,
-        };
-      });
-    }
-
-    compileOneFile(inputFile) {
-      return this.coffeeScriptCompiler.compileOneFile(inputFile);
-    }
-
-    addCompileResult(inputFile, sourceWithMap) {
-      inputFile.addJavaScript({
-        path: this.coffeeScriptCompiler.outputFilePath(inputFile),
-        sourcePath: inputFile.getPathInPackage(),
-        data: sourceWithMap.source,
-        sourceMap: sourceWithMap.sourceMap,
-        bare: inputFile.getFileOptions().bare
-      });
-    }
-
-    compileResultSize(sourceWithMap) {
-      return sourceWithMap.source.length +
-        this.sourceMapSize(sourceWithMap.sourceMap);
+      };
     }
   }
 
   Plugin.registerCompiler({
     extensions: ['coffee', 'litcoffee', 'coffee.md']
-  }, () => new CachedCoffeeScriptCompiler());
+  }, () => new SolidCoffeeScriptCompiler());
 }
