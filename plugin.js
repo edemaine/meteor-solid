@@ -2,6 +2,7 @@ const solidOptionsCache = {};
 
 function getSolidConfig(inputFile) {
   const isClient = inputFile.getArch().startsWith('web');
+  const isDev = process.env.NODE_ENV !== 'production';
 
   let solidOptions = {};
   // Read package.json, based on _inferFromPackageJson in
@@ -59,17 +60,33 @@ function getSolidConfig(inputFile) {
     }
   }
 
-  return {solidOptions, isClient, useSolid, solidPreset};
+  return {solidOptions, isClient, isDev, useSolid, solidPreset};
 }
 
 function modifyBabelConfig(babelOptions, inputFile) {
-  const {solidOptions, isClient, useSolid, solidPreset} =
+  const {solidOptions, isClient, isDev, useSolid, solidPreset} =
     getSolidConfig(inputFile);
 
   // Modify babelOptions in-place.
+  if (!babelOptions.presets) babelOptions.presets = [];
+  if (useSolid && isDev) {
+    // Install solid-js renaming plugin, as preset to run after Solid preset.
+    // (Note Babel presets are run in reverse order, last to first.)
+    const extension = isClient ? '.cjs' : '.js';
+    babelOptions.presets.push({
+      plugins: [[
+        Npm.require('babel-plugin-rewrite-require'),
+        {
+          aliases: {
+            'solid-js/store': 'solid-js/store/dist/dev' + extension,
+            'solid-js/web': 'solid-js/web/dist/dev' + extension,
+            'solid-js': 'solid-js/dist/dev' + extension,
+          }
+        }
+      ]]
+    });
+  }
   if (solidPreset) {
-    if (!babelOptions.presets)
-      babelOptions.presets = [];
     babelOptions.presets.push(solidPreset);
   } else {
     // Fall back to React mode, Meteor's default.
@@ -160,7 +177,7 @@ if (Package['coffeescript-compiler']) {
     }
 
     getCacheKey(inputFile) {
-      const {useSolid, solidPreset} = getSolidConfig(inputFile);
+      const {isDev, useSolid, solidPreset} = getSolidConfig(inputFile);
       return [
         inputFile.getArch(),
         inputFile.getSourceHash(),
@@ -168,6 +185,7 @@ if (Package['coffeescript-compiler']) {
         this.coffeeScriptCompiler.getCompileOptions(inputFile),
         useSolid,
         solidPreset,
+        isDev,
       ];
     }
 

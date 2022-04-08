@@ -16,6 +16,7 @@ Package.registerBuildPlugin({
   sources: ['plugin.js'],
   npmDependencies: {
     micromatch: '4.0.4',
+    'babel-plugin-rewrite-require': '1.14.5',
     // implied by https://github.com/meteor/meteor/blob/devel/npm-packages/meteor-babel/package.json
     //"@babel/plugin-proposal-class-properties": "7.16.7",
     //"@babel/preset-react": "7.16.7",
