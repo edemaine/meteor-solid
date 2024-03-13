@@ -40,9 +40,10 @@ Additionally, to enable CoffeeScript support, you should explicitly add
 meteor add coffeescript-compiler
 ```
 
-In addition, you must install the SolidJS compiler via NPM:
+In addition, you must install SolidJS and the SolidJS compiler via NPM:
 
 ```bash
+npm install solid-js
 npm install -D babel-preset-solid
 ```
 
