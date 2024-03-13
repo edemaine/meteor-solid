@@ -12,9 +12,12 @@ including these key features:
 
 A [demo repository](https://github.com/edemaine/solid-meteor-demo)
 illustrates the use of this package in a Meteor project.
-Related, the
-[`solid-meteor-data` library](https://github.com/edemaine/solid-meteor-data)
-provides tools for combining SolidJS and Meteor reactivity, and
+If you're coming from Blaze, you might also check out
+[this example of porting Blaze to SolidJS](https://forums.meteor.com/t/meteor-solidjs-demo/57242/9)
+Both of these examples use
+[`solid-meteor-data` library](https://github.com/edemaine/solid-meteor-data),
+which provides tools for combining SolidJS and Meteor reactivity.
+Related,
 [`edemaine:solid-meteor-helper`](https://github.com/edemaine/meteor-solid-template-helper/tree/main)
 enables use of SolidJS components within [Blaze](http://blazejs.org/) templates
 (e.g. for gradual transitions from Blaze).
