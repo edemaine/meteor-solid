@@ -1,6 +1,6 @@
 Package.describe({
   name: 'edemaine:solid',
-  version: '0.2.3',
+  version: '0.3.0',
   summary: 'Compiler plugin for SolidJS including SSR',
   documentation: 'README.md',
   git: 'https://github.com/edemaine/meteor-solid.git',
@@ -10,7 +10,7 @@ Package.registerBuildPlugin({
   name: 'compile-solid',
   use: [
     'babel-compiler',
-    'caching-compiler@1.2.1',
+    'caching-compiler@2.0.1',
     'coffeescript-compiler@2.4.1',
   ],
   sources: ['plugin.js'],
@@ -23,7 +23,7 @@ Package.registerBuildPlugin({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('2.5.3');
+  api.versionsFrom('3.0');
   api.use('isobuild:compiler-plugin@1.0.0');
   api.use('babel-compiler');
   api.use('coffeescript-compiler@2.4.1', {weak: true});
