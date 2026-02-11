@@ -102,21 +102,39 @@ function modifyBabelConfig(babelOptions, inputFile) {
   }
 }
 
+// Tell other plugins not to use React, and to use our modifyBabelConfig.
+// For example, edemaine:civet supports this protocol.
+
+globalThis.babelFeatures = {
+  ...globalThis.babelFeatures,
+  react: false,
+};
+
+const previousModifyBabelConfig = globalThis.modifyBabelConfig;
+globalThis.modifyBabelConfig = function (babelOptions, inputFile) {
+  if (previousModifyBabelConfig) {
+    previousModifyBabelConfig(babelOptions, inputFile);
+  }
+  return modifyBabelConfig(babelOptions, inputFile);
+};
+
 Plugin.registerCompiler({
   extensions: ['js', 'jsx', 'mjs'],
 }, function () {
   return new BabelCompiler({
+    ...globalThis.babelFeatures,
     react: false,
-  }, modifyBabelConfig);
+  }, globalThis.modifyBabelConfig);
 });
 
 Plugin.registerCompiler({
   extensions: ["ts", "tsx"],
 }, function () {
   return new TypeScriptCompiler({
+    ...globalThis.babelFeatures,
     react: false,
     typescript: true,
-  }, modifyBabelConfig);
+  }, globalThis.modifyBabelConfig);
 });
 
 // Copied from Meteor's typescript package:
@@ -138,8 +156,9 @@ if (Package['coffeescript-compiler']) {
       super();
       // Override super's babelCompiler to use our Solid compiler:
       this.babelCompiler = new BabelCompiler({
+        ...globalThis.babelFeatures,
         react: false,
-      }, modifyBabelConfig);
+      }, globalThis.modifyBabelConfig);
     }
   }
 

@@ -147,6 +147,33 @@ until you modify those files (or change settings) again.
 Alternatively, you can reset the cache by deleting the directory
 `.meteor/local/plugin-cache/edemaine_solid` and restarting Meteor.
 
+## Babel Customization Protocol
+
+`edemaine:solid` supports a lightweight protocol for Meteor compiler plugins
+to customize the use of `BabelCompiler`.
+For example, [`edemaine:civet`](https://github.com/edemaine/meteor-civet)
+uses this protocol when compiling `.civet` files.
+In particular, this allows `edemaine:civet` and `edemaine:solid` to be used
+together to support `.civet` files with Solid JSX.
+
+The protocol is defined by two optional properties on `Meteor`:
+
+* `globalThis.babelFeatures`: object merged into the `extraFeatures`
+  first argument passed to `new BabelCompiler(...)`
+* `globalThis.modifyBabelConfig(babelOptions, inputFile)`:
+  callback for mutating Babel options on a per-file basis
+
+Recommended behavior for plugins (such as this one):
+
+* Merge desired features into `globalThis.babelFeatures` via
+  `{ ...globalThis.babelFeatures, key: value }`.
+* Wrap/chain `globalThis.modifyBabelConfig` so multiple plugins can cooperate.
+* Treat both properties as optional.
+* Lazily build your `BabelCompiler` only when building a file,
+  not when registering your compiler plugin,
+  to give a chance for other packages (such as this one) to set the
+  `globalThis.babelFeatures`/`globalThis.modifyBabelConfig` protocol.
+
 ## Alternatives
 
 If you just want to use client-side SolidJS, with no SSR, and you do not need
