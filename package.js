@@ -1,6 +1,18 @@
+const versions = {
+  2: '0.4.0',
+  3: '1.4.0',
+};
+
+const meteorVersion = process.env.METEOR_VERSION || '3';
+const version = versions[meteorVersion];
+
+if (!version) {
+  throw new Error(`Unknown METEOR_VERSION="${meteorVersion}". Use 2 or 3.`);
+}
+
 Package.describe({
   name: 'edemaine:solid',
-  version: '0.3.0',
+  version,
   summary: 'Compiler plugin for SolidJS including SSR',
   documentation: 'README.md',
   git: 'https://github.com/edemaine/meteor-solid.git',
@@ -9,8 +21,8 @@ Package.describe({
 Package.registerBuildPlugin({
   name: 'compile-solid',
   use: [
-    'babel-compiler',
-    'caching-compiler@2.0.1',
+    'babel-compiler@7.6.2||7.11.0',
+    'caching-compiler@1.2.1||2.0.1',
     'coffeescript-compiler@2.4.1',
   ],
   sources: ['plugin.js'],
@@ -23,9 +35,9 @@ Package.registerBuildPlugin({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('3.0');
+  api.versionsFrom(['2.3', '3.0']);
   api.use('isobuild:compiler-plugin@1.0.0');
-  api.use('babel-compiler');
+  api.use('babel-compiler@7.6.2||7.11.0');
   api.use('coffeescript-compiler@2.4.1', {weak: true});
   api.use('react-fast-refresh', {weak: true});
 

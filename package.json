@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "publish": "npm run publish:2 && npm run publish:3",
+    "publish:2": "cross-env METEOR_VERSION=2 meteor publish --release 2.16",
+    "publish:3": "cross-env METEOR_VERSION=3 meteor publish --release 3.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}

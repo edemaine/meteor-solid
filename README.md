@@ -174,6 +174,21 @@ Recommended behavior for plugins (such as this one):
   to give a chance for other packages (such as this one) to set the
   `globalThis.babelFeatures`/`globalThis.modifyBabelConfig` protocol.
 
+## Release Process
+
+This package publishes two release tracks:
+
+* v0.x.x releases target Meteor 2
+* v1.x.x releases target Meteor 3
+
+Release workflow:
+
+1. Increment both version tracks in `package.js`.
+2. `git commit -a`
+3. `npm run publish`, or separately:
+   * `npm run publish:2` for Meteor 2
+   * `npm run publish:3` for Meteor 3
+
 ## Alternatives
 
 If you just want to use client-side SolidJS, with no SSR, and you do not need
